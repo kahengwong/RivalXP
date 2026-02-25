@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -10,12 +9,41 @@ import { Button } from "@/components/ui/button";
 import { Zap, Trash2, Heart, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { generateRivalActivityTaunt } from "@/ai/flows/rival-activity-taunts-flow";
 import { useToast } from "@/hooks/use-toast";
 
 const XP_PER_LEVEL = 1000;
 const RIVAL_BASE_XP_PER_MIN = 25; 
-const FOCUS_MODE_RIVAL_MULTIPLIER = 0.2; 
+const FOCUS_MODE_RIVAL_MULTIPLIER = 0.2;
+
+// Static taunts - no AI needed!
+const TAUNTS = {
+  serious: [
+    "任务完成。但我的XP也在增长。",
+    "不错的尝试。我不会落后的。",
+    "哼，就这样而已吗？",
+    "你在努力，我很欣赏。但我不会停。",
+    "完成了？时间就是金钱，而你两者都在浪费。",
+  ],
+  smug: [
+    "哇，你完成了一个任务？好棒棒哦～",
+    "哦？终于搞定了一个？我都没注意到～",
+    "嘿嘿，恭喜恭喜～我的XP可是还在涨呢～",
+    "哎呀，你好努力哦～但好像还是比我慢呢～",
+    "哇～你完成啦～我都不好意思了呢～",
+  ],
+  funny: [
+    "哦哦！你完成任务啦！我的皮卡丘表示：",
+    "恭喜恭喜！🎉 你的对手表示压力山大（并没有）",
+    "哇！任务完成！我的皮卡丘在跳舞你也看到吧？",
+    "哦哟！厉害哦～我假装很在意好了～",
+    "太棒了！！！我的皮卡丘说：继续加油哦（才怪）",
+  ],
+};
+
+function getRandomTaunt(personality: string): string {
+  const options = TAUNTS[personality as keyof typeof TAUNTS] || TAUNTS.serious;
+  return options[Math.floor(Math.random() * options.length)];
+}
 
 export function Dashboard({ initialRival }: { initialRival: Rival }) {
   const { toast } = useToast();
@@ -37,7 +65,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskDuration, setNewTaskDuration] = useState("0");
   const [newTaskXP, setNewTaskXP] = useState("100");
-  const [taunt, setTaunt] = useState<string | null>(`WILD PIKACHU APPEARED!`);
+  const [taunt, setTaunt] = useState<string | null>(`野生的皮卡丘出现了！`);
 
   useEffect(() => {
     localStorage.setItem('rival_xp_state', JSON.stringify(gameState));
@@ -87,16 +115,11 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
     return () => clearInterval(timer);
   }, []);
 
-  const triggerTaunt = async (title: string) => {
-    try {
-      const { taunt: t } = await generateRivalActivityTaunt({
-        rivalPersonality: gameState.rival.personality,
-        taskTitle: title
-      });
-      setTaunt(t);
-    } catch (e) {
-      console.error(e);
-    }
+  // Simple static taunt - no AI API call!
+  const triggerTaunt = (title: string) => {
+    const personality = gameState.rival.personality || 'smug';
+    const newTaunt = getRandomTaunt(personality);
+    setTaunt(newTaunt);
   };
 
   const addTask = () => {
@@ -218,9 +241,9 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
         <div className="bg-white border-[4px] border-black p-4 pixel-shadow">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
             <div className="md:col-span-6 space-y-1.5">
-              <Label className="font-pixel text-[10px] uppercase">New Quest Name</Label>
+              <Label className="font-pixel text-[10px] uppercase">新任务名称</Label>
               <Input 
-                placeholder="E.G. STUDY..." 
+                placeholder="例如：学习..." 
                 value={newTaskTitle} 
                 onChange={(e) => setNewTaskTitle(e.target.value.toUpperCase())}
                 className="border-[3px] border-black rounded-none h-11 text-sm font-bold uppercase focus-visible:ring-0"
@@ -236,7 +259,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
               />
             </div>
             <div className="md:col-span-2 space-y-1.5">
-              <Label className="font-pixel text-[10px] uppercase flex items-center gap-1"><Clock className="w-3 h-3 text-blue-500" /> MIN</Label>
+              <Label className="font-pixel text-[10px] uppercase flex items-center gap-1"><Clock className="w-3 h-3 text-blue-500" /> 分钟</Label>
               <Input 
                 type="number"
                 value={newTaskDuration} 
@@ -249,7 +272,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 className="w-full bg-black text-white h-11 rounded-none font-pixel text-[11px] uppercase hover:bg-black/90"
                 onClick={addTask}
               >
-                + ADD
+                + 添加
               </Button>
             </div>
           </div>
@@ -258,8 +281,8 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
         {/* Quest Log */}
         <div className="space-y-3 pb-12">
           <div className="flex items-center justify-between border-b-2 border-black pb-2">
-            <h2 className="font-pixel text-[14px] flex items-center gap-2">
-               <Zap className="w-4 h-4" /> QUEST LOG
+            <h2 className="font-pixel text-[14px] flex items-center gap-2"> 
+               <Zap className="w-4 h-4" /> 任务列表
             </h2>
             {completedCount > 0 && (
               <Button 
@@ -268,7 +291,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 onClick={clearCompletedTasks}
                 className="border-2 border-black rounded-none font-pixel text-[9px] h-8 px-3 hover:bg-red-50"
               >
-                <Trash2 className="w-3 h-3 mr-1" /> CLEAR
+                <Trash2 className="w-3 h-3 mr-1" /> 清除
               </Button>
             )}
           </div>
@@ -284,7 +307,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
             ))}
             {gameState.tasks.length === 0 && (
                <div className="p-10 border-2 border-black border-dashed text-center bg-white/40">
-                <span className="font-pixel text-[11px] text-muted-foreground uppercase">NO ACTIVE QUESTS</span>
+                <span className="font-pixel text-[11px] text-muted-foreground uppercase">暂无任务</span>
                </div>
             )}
           </div>
