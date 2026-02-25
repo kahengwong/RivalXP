@@ -14,8 +14,8 @@ interface SpriteProps {
 
 export function Sprite({ spriteId, size = 180, animate = true, className }: SpriteProps) {
   const imageData = PlaceHolderImages.find(img => img.id === spriteId);
-  const imageUrl = imageData?.imageUrl || `https://picsum.photos/seed/${spriteId}/256/256`;
-  const aiHint = imageData?.imageHint || 'pixel pokemon';
+  const imageUrl = imageData?.imageUrl || `https://picsum.photos/seed/${spriteId}-pixel/256/256`;
+  const aiHint = imageData?.imageHint || 'pixel pokemon art';
 
   return (
     <div className={cn(
@@ -23,7 +23,7 @@ export function Sprite({ spriteId, size = 180, animate = true, className }: Spri
       animate && "animate-float",
       className
     )}>
-      {/* 经典的精灵平台阴影 */}
+      {/* Sprite Platform Shadow */}
       <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[80%] h-4 bg-black/10 rounded-[100%] blur-[2px]" />
       
       <div className="relative p-2">

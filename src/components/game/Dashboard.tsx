@@ -14,8 +14,8 @@ import { generateRivalActivityTaunt } from "@/ai/flows/rival-activity-taunts-flo
 import { useToast } from "@/hooks/use-toast";
 
 const XP_PER_LEVEL = 1000;
-const RIVAL_BASE_XP_PER_MIN = 25; // Rival gains XP over time
-const FOCUS_MODE_RIVAL_MULTIPLIER = 0.2; // Rival slows down significantly during focus
+const RIVAL_BASE_XP_PER_MIN = 25; 
+const FOCUS_MODE_RIVAL_MULTIPLIER = 0.2; 
 
 export function Dashboard({ initialRival }: { initialRival: Rival }) {
   const { toast } = useToast();
@@ -26,7 +26,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
     }
     return {
       user: { name: "BLASTOISE", xp: 0, level: 1, spriteId: 'user-blastoise', streak: 0 },
-      rival: { ...initialRival, name: "PIKACHU", spriteId: 'rival-pikachu' },
+      rival: { ...initialRival, spriteId: 'rival-pikachu' },
       tasks: [],
       isFocusMode: false,
       lastActive: Date.now(),
@@ -46,7 +46,6 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
   useEffect(() => {
     const timer = setInterval(() => {
       setGameState(prev => {
-        // Check if Focus Mode (any timed task is active)
         const isAnyTaskActive = prev.tasks.some(t => t.isActive);
         const multiplier = isAnyTaskActive ? FOCUS_MODE_RIVAL_MULTIPLIER : 1.0;
         
@@ -161,8 +160,10 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
         
         {/* Battle Scene */}
         <div className="relative aspect-[16/9] md:aspect-[21/9] bg-[#e0f8cf] border-[4px] border-black overflow-hidden pixel-shadow">
+          <div className="absolute inset-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:24px_24px] opacity-5" />
+          
           {/* Rival HP (Top Right) */}
-          <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 scale-90 md:scale-100 origin-top-right">
+          <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 scale-75 xs:scale-90 md:scale-100 origin-top-right">
              <XPProgress 
                 label={gameState.rival.name} 
                 currentXP={Math.floor(gameState.rival.xp) % XP_PER_LEVEL} 
@@ -171,12 +172,12 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 colorClass="bg-accent"
               />
           </div>
-          <div className="absolute top-[15%] left-[15%] md:left-[35%]">
-            <Sprite spriteId="rival-pikachu" size={100} />
+          <div className="absolute top-[20%] left-[10%] md:left-[30%]">
+            <Sprite spriteId="rival-pikachu" size={90} />
           </div>
 
           {/* User HP (Bottom Left) */}
-          <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 z-10 scale-90 md:scale-100 origin-bottom-left">
+          <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 z-10 scale-75 xs:scale-90 md:scale-100 origin-bottom-left">
              <XPProgress 
                 label={gameState.user.name} 
                 currentXP={gameState.user.xp % XP_PER_LEVEL} 
@@ -184,12 +185,12 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 level={gameState.user.level}
               />
           </div>
-          <div className="absolute bottom-[15%] right-[15%] md:right-[35%]">
-            <Sprite spriteId="user-blastoise" size={140} />
+          <div className="absolute bottom-[20%] right-[10%] md:right-[30%]">
+            <Sprite spriteId="user-blastoise" size={120} />
           </div>
 
           {gameState.isFocusMode && (
-            <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 border-2 border-black font-pixel text-[8px] animate-pulse">
+            <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 border-2 border-black font-pixel text-[8px] animate-pulse z-20">
               FOCUS MODE ON
             </div>
           )}

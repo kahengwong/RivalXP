@@ -16,15 +16,15 @@ interface RivalSetupProps {
 }
 
 export function RivalSetup({ onComplete }: RivalSetupProps) {
-  const [name, setName] = useState("BLUE");
+  const [name, setName] = useState("PIKACHU");
   const [personality, setPersonality] = useState<PersonalityTone>("smug");
 
   const handleSubmit = () => {
     if (!name.trim()) return;
     onComplete({
-      name,
+      name: name.toUpperCase(),
       personality,
-      spriteId: 'rival',
+      spriteId: 'rival-pikachu',
       xp: 0,
       level: 1
     });
@@ -38,8 +38,9 @@ export function RivalSetup({ onComplete }: RivalSetupProps) {
           <div className="h-1 w-full bg-black my-2" />
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex justify-center py-4 bg-[#e0f8cf] border-4 border-black">
-            <Sprite spriteId="rival" size={140} />
+          <div className="flex justify-center py-4 bg-[#e0f8cf] border-4 border-black relative overflow-hidden">
+             <div className="absolute inset-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px] opacity-10" />
+            <Sprite spriteId="rival-pikachu" size={140} />
           </div>
 
           <div className="space-y-3">
