@@ -23,8 +23,8 @@ export function Sprite({ spriteId, size = 180, animate = true, className }: Spri
       animate && "animate-float",
       className
     )}>
-      {/* Sprite Platform Shadow */}
-      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[80%] h-4 bg-black/10 rounded-[100%] blur-[2px]" />
+      {/* 像素风阴影底座 */}
+      <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[90%] h-6 bg-black/10 rounded-full blur-[4px]" />
       
       <div className="relative p-2">
         <Image 
@@ -32,7 +32,7 @@ export function Sprite({ spriteId, size = 180, animate = true, className }: Spri
           alt={spriteId}
           width={size}
           height={size}
-          className="pixelated contrast-[1.1] brightness-[1.05]"
+          className="pixelated contrast-[1.2] brightness-[1.05]"
           data-ai-hint={aiHint}
           priority
         />
