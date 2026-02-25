@@ -1,9 +1,7 @@
-
 "use client";
 
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 interface SpriteProps {
   spriteId: 'user-blastoise' | 'rival-pikachu';
@@ -13,9 +11,9 @@ interface SpriteProps {
 }
 
 export function Sprite({ spriteId, size = 180, animate = true, className }: SpriteProps) {
-  const imageData = PlaceHolderImages.find(img => img.id === spriteId);
-  const imageUrl = imageData?.imageUrl || `https://picsum.photos/seed/${spriteId}-pixel/256/256`;
-  const aiHint = imageData?.imageHint || 'pixel pokemon art';
+  // 使用合并的图片，通过 object-position 显示不同部分
+  // 皮卡丘在左边(0%), 水箭龟在右边(100%)
+  const objectPosition = spriteId === 'rival-pikachu' ? 'left' : 'right';
 
   return (
     <div className={cn(
@@ -27,15 +25,19 @@ export function Sprite({ spriteId, size = 180, animate = true, className }: Spri
       <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[90%] h-6 bg-black/10 rounded-full blur-[4px]" />
       
       <div className="relative p-2">
-        <Image 
-          src={imageUrl}
-          alt={spriteId}
-          width={size}
-          height={size}
-          className="pixelated contrast-[1.2] brightness-[1.05]"
-          data-ai-hint={aiHint}
-          priority
-        />
+        <div 
+          className="relative overflow-hidden"
+          style={{ width: size, height: size }}
+        >
+          <Image 
+            src="/Gemini_Generated_Image_kh6rfzkh6rfzkh6r.png"
+            alt={spriteId}
+            fill
+            className="object-contain"
+            style={{ objectPosition: objectPosition === 'left' ? '0%' : '100%' }}
+            priority
+          />
+        </div>
       </div>
     </div>
   );
