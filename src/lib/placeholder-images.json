@@ -2,15 +2,15 @@
   "placeholderImages": [
     {
       "id": "user-blastoise",
-      "description": "16-bit pixel art of Blastoise, a large blue turtle with water cannons on its shell. Retro RPG battle sprite with thick black outlines and vibrant colors.",
-      "imageUrl": "https://picsum.photos/seed/blastoise-pixel-classic/256/256",
-      "imageHint": "blastoise pixel"
+      "description": "Blastoise - blue water turtle Pokemon",
+      "imageUrl": "/blastoise.png",
+      "imageHint": "blastoise"
     },
     {
       "id": "rival-pikachu",
-      "description": "16-bit pixel art of Pikachu, a small yellow electric mouse with red cheeks. Retro handheld game sprite style.",
-      "imageUrl": "https://picsum.photos/seed/pikachu-pixel-retro/256/256",
-      "imageHint": "pikachu pixel"
+      "description": "Pikachu - yellow electric Pokemon",
+      "imageUrl": "/pikachu.png",
+      "imageHint": "pikachu"
     }
   ]
 }
