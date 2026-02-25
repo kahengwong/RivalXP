@@ -209,7 +209,9 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 colorClass="bg-[#70c0a8]"
               />
           </div>
-          <div className="absolute bottom-[3%] left-[5%] md:left-[15%]">
+          <div className="absolute -bottom-4 left-[5%] md:left-[15%]">
+            <Sprite spriteId="user-blastoise" size={140} className="md:w-[200px] transform scale-x-[-1]" />
+          </div>
             <Sprite spriteId="user-blastoise" size={140} className="md:w-[200px] transform scale-x-[-1]" />
           </div>
 
