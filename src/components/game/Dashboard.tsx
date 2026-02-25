@@ -181,7 +181,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
     <div className="min-h-screen bg-[#f5f1f0] p-4 md:p-8 flex flex-col items-center overflow-x-hidden">
       <div className="w-full max-w-4xl space-y-4">
         
-        {/* Battle Scene: Blue (Player/Blastoise) vs Yellow (Rival/Pikachu) */}
+        {/* Battle Scene: Blue (Player/Squirtle) vs Yellow (Rival/Pikachu) */}
         <div className="relative aspect-[16/10] md:aspect-[21/9] bg-[#e0f8cf] border-[4px] border-black overflow-hidden pixel-shadow">
           <div className="absolute inset-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:24px_24px] opacity-5" />
           
@@ -199,7 +199,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
             <Sprite spriteId="rival-pikachu" size={120} className="md:w-[180px]" />
           </div>
 
-          {/* User HP (Bottom Right) - Blue Side / Blastoise */}
+          {/* User HP (Bottom Right) - Blue Side / Squirtle */}
           <div className="absolute bottom-2 right-2 md:bottom-6 md:right-6 z-10 scale-90 sm:scale-100 origin-bottom-right">
              <XPProgress 
                 label={gameState.user.name} 
@@ -209,9 +209,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 colorClass="bg-[#70c0a8]"
               />
           </div>
-          <div className="absolute -bottom-4 left-[5%] md:left-[15%]">
-            <Sprite spriteId="user-blastoise" size={140} className="md:w-[200px] transform scale-x-[-1]" />
-          </div>
+          <div className="absolute bottom-[3%] left-[5%] md:left-[15%]">
             <Sprite spriteId="user-blastoise" size={140} className="md:w-[200px] transform scale-x-[-1]" />
           </div>
 
