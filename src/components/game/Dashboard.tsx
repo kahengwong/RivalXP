@@ -7,9 +7,10 @@ import { XPProgress } from "./XPProgress";
 import { Sprite } from "./Sprite";
 import { TaskCard } from "./TaskCard";
 import { Button } from "@/components/ui/button";
-import { Plus, Trophy, Zap } from "lucide-react";
+import { Plus, Trophy, Zap, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { generateRivalActivityTaunt } from "@/ai/flows/rival-activity-taunts-flow";
 import { useToast } from "@/hooks/use-toast";
 
@@ -35,38 +36,85 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
   });
 
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [newTaskDuration, setNewTaskDuration] = useState("0");
   const [taunt, setTaunt] = useState<string | null>(`WILD ${initialRival.name.toUpperCase()} APPEARED!`);
 
+  // Persistence
   useEffect(() => {
     localStorage.setItem('rival_xp_state', JSON.stringify(gameState));
   }, [gameState]);
 
+  // Rival Passive XP and Task Timer Tick
   useEffect(() => {
     const timer = setInterval(() => {
       setGameState(prev => {
-        const rivalGain = RIVAL_BASE_XP_PER_MIN;
+        // Rival XP Gain (every minute)
+        const rivalGain = RIVAL_BASE_XP_PER_MIN / 60; // Spread per second for smoothness
         const newRivalXp = prev.rival.xp + rivalGain;
         const newRivalLevel = Math.floor(newRivalXp / XP_PER_LEVEL) + 1;
-        
+
+        // Timer Tick for Active Tasks
+        let anyCompleted = false;
+        const updatedTasks = prev.tasks.map(task => {
+          if (task.isActive && task.remainingSeconds !== undefined && task.remainingSeconds > 0) {
+            const nextSec = task.remainingSeconds - 1;
+            if (nextSec === 0) {
+              anyCompleted = true;
+              return { ...task, remainingSeconds: 0, isActive: false, completed: true };
+            }
+            return { ...task, remainingSeconds: nextSec };
+          }
+          return task;
+        });
+
+        let newUserXp = prev.user.xp;
+        if (anyCompleted) {
+          const justFinished = updatedTasks.find((t, i) => t.completed && !prev.tasks[i].completed);
+          if (justFinished) {
+            newUserXp += justFinished.xpReward;
+            // Taunt for auto-completed task
+            triggerTaunt(justFinished.title);
+          }
+        }
+
         return {
           ...prev,
-          rival: { ...prev.rival, xp: newRivalXp, level: newRivalLevel }
+          rival: { ...prev.rival, xp: newRivalXp, level: newRivalLevel },
+          tasks: updatedTasks,
+          user: { ...prev.user, xp: newUserXp, level: Math.floor(newUserXp / XP_PER_LEVEL) + 1 }
         };
       });
-    }, RIVAL_XP_INTERVAL_MS);
+    }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [gameState.rival.personality]);
+
+  const triggerTaunt = async (title: string) => {
+    try {
+      const { taunt: t } = await generateRivalActivityTaunt({
+        rivalPersonality: gameState.rival.personality,
+        taskTitle: title
+      });
+      setTaunt(t);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const addTask = () => {
     if (!newTaskTitle.trim()) return;
+    const duration = parseInt(newTaskDuration) || 0;
     const task: Task = {
       id: Math.random().toString(36).substr(2, 9),
       title: newTaskTitle,
-      xpReward: 80,
+      xpReward: duration > 0 ? duration * 10 + 100 : 80,
       completed: false,
+      durationMinutes: duration > 0 ? duration : undefined,
+      remainingSeconds: duration > 0 ? duration * 60 : undefined,
+      isActive: false,
     };
     setGameState(prev => ({ ...prev, tasks: [task, ...prev.tasks] }));
     setNewTaskTitle("");
+    setNewTaskDuration("0");
   };
 
   const completeTask = async (id: string) => {
@@ -74,26 +122,24 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
     if (!task || task.completed) return;
 
     setGameState(prev => {
-      const newTasks = prev.tasks.map(t => t.id === id ? { ...t, completed: true } : t);
+      const newTasks = prev.tasks.map(t => t.id === id ? { ...t, completed: true, isActive: false } : t);
       const newUserXp = prev.user.xp + task.xpReward;
-      const newUserLevel = Math.floor(newUserXp / XP_PER_LEVEL) + 1;
       return {
         ...prev,
         tasks: newTasks,
-        user: { ...prev.user, xp: newUserXp, level: newUserLevel },
+        user: { ...prev.user, xp: newUserXp, level: Math.floor(newUserXp / XP_PER_LEVEL) + 1 },
         lastActive: Date.now()
       };
     });
 
-    try {
-      const { taunt: t } = await generateRivalActivityTaunt({
-        rivalPersonality: gameState.rival.personality,
-        taskTitle: task.title
-      });
-      setTaunt(t);
-    } catch (e) {
-      console.error(e);
-    }
+    triggerTaunt(task.title);
+  };
+
+  const toggleTaskTimer = (id: string) => {
+    setGameState(prev => ({
+      ...prev,
+      tasks: prev.tasks.map(t => t.id === id ? { ...t, isActive: !t.isActive } : t)
+    }));
   };
 
   return (
@@ -112,8 +158,8 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 colorClass="bg-accent"
               />
           </div>
-          <div className="absolute top-4 left-[25%] md:left-[40%]">
-            <Sprite spriteId="rival-pikachu" size={160} />
+          <div className="absolute top-4 left-[35%] md:left-[45%]">
+            <Sprite spriteId="rival-pikachu" size={140} />
           </div>
 
           {/* Player Side (Bottom Left) */}
@@ -125,13 +171,13 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 level={gameState.user.level}
               />
           </div>
-          <div className="absolute bottom-4 right-[25%] md:right-[40%]">
-            <Sprite spriteId="user-blastoise" size={200} />
+          <div className="absolute bottom-4 right-[35%] md:right-[45%]">
+            <Sprite spriteId="user-blastoise" size={180} />
           </div>
         </div>
 
         {/* Dialogue Box */}
-        <div className="dialogue-box min-h-[100px] flex items-center mb-6 bg-white border-4 border-black p-4 relative">
+        <div className="dialogue-box min-h-[100px] flex items-center mb-6 bg-white border-4 border-black p-5 relative">
           <p className="font-pixel text-[13px] leading-relaxed uppercase w-full pr-8">
             {taunt || "WHAT WILL YOU DO?"}
           </p>
@@ -139,7 +185,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
              <Button 
              variant="ghost" 
              size="sm"
-             className="absolute bottom-2 right-2 animate-bounce p-0"
+             className="absolute bottom-2 right-2 animate-bounce p-0 hover:bg-transparent"
              onClick={() => setTaunt(null)}
            >
              <span className="font-pixel text-xl">▼</span>
@@ -155,7 +201,12 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
              </h2>
              <div className="space-y-3 overflow-y-auto max-h-[500px] pr-2 custom-scrollbar">
                 {gameState.tasks.map(task => (
-                  <TaskCard key={task.id} task={task} onComplete={completeTask} />
+                  <TaskCard 
+                    key={task.id} 
+                    task={task} 
+                    onComplete={completeTask} 
+                    onToggleTimer={toggleTaskTimer}
+                  />
                 ))}
                 {gameState.tasks.length === 0 && (
                    <div className="p-12 border-2 border-black border-dashed text-center bg-white/40">
@@ -166,7 +217,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
           </div>
 
           <div className="lg:col-span-5 flex flex-col gap-6">
-            <h2 className="font-pixel text-[12px] border-b-2 border-black pb-2">ACTIONS</h2>
+            <h2 className="font-pixel text-[12px] border-b-2 border-black pb-2 uppercase">Actions</h2>
             
             <Dialog>
               <DialogTrigger asChild>
@@ -175,19 +226,33 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                   NEW QUEST
                 </Button>
               </DialogTrigger>
-              <DialogContent className="border-[4px] border-black rounded-none bg-white">
+              <DialogContent className="border-[4px] border-black rounded-none bg-white p-6 max-w-sm">
                 <DialogHeader>
-                  <DialogTitle className="font-pixel text-[14px] uppercase">NEW QUEST NAME</DialogTitle>
+                  <DialogTitle className="font-pixel text-[14px] uppercase">New Quest Data</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
-                  <Input 
-                    placeholder="ENTER TASK..." 
-                    value={newTaskTitle} 
-                    onChange={(e) => setNewTaskTitle(e.target.value.toUpperCase())}
-                    className="border-[3px] border-black rounded-none h-12 text-lg font-bold"
-                  />
+                  <div className="space-y-2">
+                    <Label className="font-pixel text-[10px]">Quest Title</Label>
+                    <Input 
+                      placeholder="ENTER TASK..." 
+                      value={newTaskTitle} 
+                      onChange={(e) => setNewTaskTitle(e.target.value.toUpperCase())}
+                      className="border-[3px] border-black rounded-none h-12 text-lg font-bold"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-pixel text-[10px] flex items-center gap-2">
+                      <Clock className="w-3 h-3" /> Duration (MINS, 0 = Normal)
+                    </Label>
+                    <Input 
+                      type="number"
+                      value={newTaskDuration} 
+                      onChange={(e) => setNewTaskDuration(e.target.value)}
+                      className="border-[3px] border-black rounded-none h-12 text-lg font-bold"
+                    />
+                  </div>
                   <Button 
-                    className="w-full bg-black text-white h-12 rounded-none font-pixel uppercase"
+                    className="w-full bg-black text-white h-12 rounded-none font-pixel uppercase mt-4"
                     onClick={addTask}
                   >
                     ADD TO LOG
@@ -203,7 +268,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
               </div>
               <div className="h-[2px] bg-black/10 w-full" />
               <div className="font-pixel text-[9px] text-muted-foreground text-center uppercase">
-                COMPLETE QUESTS TO GAIN XP AND LEVEL UP!
+                Defeat quests to level up!
               </div>
             </div>
           </div>

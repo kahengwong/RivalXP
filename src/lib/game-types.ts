@@ -22,6 +22,9 @@ export interface Task {
   title: string;
   xpReward: number;
   completed: boolean;
+  durationMinutes?: number;
+  remainingSeconds?: number;
+  isActive?: boolean;
 }
 
 export interface GameState {
