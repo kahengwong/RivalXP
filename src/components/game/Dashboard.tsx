@@ -158,12 +158,12 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
     <div className="min-h-screen bg-[#f5f1f0] p-4 md:p-8 flex flex-col items-center overflow-x-hidden">
       <div className="w-full max-w-4xl space-y-4">
         
-        {/* Battle Scene: Blue (Player) vs Yellow (Rival) */}
+        {/* Battle Scene: Blue (Player/Blastoise) vs Yellow (Rival/Pikachu) */}
         <div className="relative aspect-[16/10] md:aspect-[21/9] bg-[#e0f8cf] border-[4px] border-black overflow-hidden pixel-shadow">
           <div className="absolute inset-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:24px_24px] opacity-5" />
           
-          {/* Rival HP (Top Right) - Yellow Side */}
-          <div className="absolute top-2 right-2 md:top-6 md:right-6 z-10">
+          {/* Rival HP (Top Right) - Yellow Side / Pikachu */}
+          <div className="absolute top-2 right-2 md:top-6 md:right-6 z-10 scale-90 sm:scale-100 origin-top-right">
              <XPProgress 
                 label={gameState.rival.name} 
                 currentXP={Math.floor(gameState.rival.xp) % XP_PER_LEVEL} 
@@ -172,12 +172,12 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 colorClass="bg-accent"
               />
           </div>
-          <div className="absolute top-[20%] left-[10%] md:left-[25%]">
-            <Sprite spriteId="rival-pikachu" size={80} className="md:w-[120px]" />
+          <div className="absolute top-[15%] left-[5%] md:left-[20%]">
+            <Sprite spriteId="rival-pikachu" size={90} className="md:w-[130px]" />
           </div>
 
-          {/* User HP (Bottom Left) - Blue Side */}
-          <div className="absolute bottom-2 left-2 md:bottom-6 md:left-6 z-10">
+          {/* User HP (Bottom Left) - Blue Side / Blastoise */}
+          <div className="absolute bottom-2 left-2 md:bottom-6 md:left-6 z-10 scale-90 sm:scale-100 origin-bottom-left">
              <XPProgress 
                 label={gameState.user.name} 
                 currentXP={gameState.user.xp % XP_PER_LEVEL} 
@@ -186,8 +186,8 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 colorClass="bg-[#70c0a8]"
               />
           </div>
-          <div className="absolute bottom-[20%] right-[10%] md:right-[25%]">
-            <Sprite spriteId="user-blastoise" size={100} className="md:w-[150px]" />
+          <div className="absolute bottom-[15%] right-[5%] md:right-[20%]">
+            <Sprite spriteId="user-blastoise" size={110} className="md:w-[160px]" />
           </div>
 
           {gameState.isFocusMode && (
@@ -214,7 +214,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
           )}
         </div>
 
-        {/* Compact Add Task Box - Directly under dialogue */}
+        {/* Compact Add Task Box */}
         <div className="bg-white border-[4px] border-black p-4 pixel-shadow">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
             <div className="md:col-span-6 space-y-1.5">
@@ -227,7 +227,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
               />
             </div>
             <div className="md:col-span-2 space-y-1.5">
-              <Label className="font-pixel text-[10px] uppercase flex items-center gap-1"><Heart className="w-3 h-3 text-red-500" /> XP</Label>
+              <Label className="font-pixel text-[10px] uppercase flex items-center gap-1"><Heart className="w-3 h-3 text-red-500" /> HP</Label>
               <Input 
                 type="number"
                 value={newTaskXP} 
@@ -255,7 +255,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
           </div>
         </div>
 
-        {/* Quest Log (History) */}
+        {/* Quest Log */}
         <div className="space-y-3 pb-12">
           <div className="flex items-center justify-between border-b-2 border-black pb-2">
             <h2 className="font-pixel text-[14px] flex items-center gap-2">

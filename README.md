@@ -1,5 +1,32 @@
-# Firebase Studio
+# RivalXP - 水箭龟 vs 皮卡丘 像素对战版
 
-This is a NextJS starter in Firebase Studio.
+这是一个基于 Next.js 15 和 Genkit AI 构建的像素风对战生产力应用。
 
-To get started, take a look at src/app/page.tsx.
+## 游戏规则
+- **蓝色阵营（你）**：你是水箭龟（Blastoise），位于右下方。
+- **黄色阵营（对手）**：对手是皮卡丘（Pikachu），位于左上方。
+- **战斗方式**：
+  - **普通任务**：完成后立即获得 HP (XP)。
+  - **限时任务**：设定时间并点击 FIGHT。倒计时期间进入专注模式，对手 XP 增长变慢。倒计时结束自动获胜。
+- **目标**：通过完成现实中的任务来提升等级，压制对手皮卡丘！
+
+## 本地运行指南
+
+1. **安装依赖**：
+   ```bash
+   npm install
+   ```
+
+2. **配置环境变量**：
+   创建一个 `.env.local` 文件，并添加你的 `GEMINI_API_KEY`（用于生成 AI 嘲讽）。
+
+3. **启动项目**：
+   ```bash
+   npm run dev
+   ```
+
+## 导出与部署
+- 你可以随时通过 Firebase Studio 顶部的菜单下载整个项目的 ZIP 包。
+- 也可以直接点击 "Deploy" 按钮将其部署到 Firebase。
+
+祝你在战斗中赢得胜利！
