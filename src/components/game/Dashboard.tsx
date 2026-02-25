@@ -209,8 +209,8 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 colorClass="bg-[#70c0a8]"
               />
           </div>
-          <div className="absolute bottom-[10%] left-[5%] md:left-[15%]">
-            <Sprite spriteId="user-blastoise" size={140} className="md:w-[200px]" />
+          <div className="absolute bottom-[3%] left-[5%] md:left-[15%]">
+            <Sprite spriteId="user-blastoise" size={140} className="md:w-[200px] transform scale-x-[-1]" />
           </div>
 
           {gameState.isFocusMode && (

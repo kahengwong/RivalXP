@@ -29,7 +29,8 @@ export function Sprite({ spriteId, size = 180, animate = true, className }: Spri
           alt={spriteId}
           width={size}
           height={size}
-          className="object-contain transparent"
+          className="object-contain"
+          style={{ backgroundColor: 'transparent' }}
           unoptimized={true}
           priority
         />
