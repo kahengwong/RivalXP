@@ -7,7 +7,7 @@ import { XPProgress } from "./XPProgress";
 import { Sprite } from "./Sprite";
 import { TaskCard } from "./TaskCard";
 import { Button } from "@/components/ui/button";
-import { Plus, Trophy, Zap, Clock } from "lucide-react";
+import { Plus, Trophy, Zap, Clock, Heart } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,8 +15,7 @@ import { generateRivalActivityTaunt } from "@/ai/flows/rival-activity-taunts-flo
 import { useToast } from "@/hooks/use-toast";
 
 const XP_PER_LEVEL = 1000;
-const RIVAL_XP_INTERVAL_MS = 1000 * 60;
-const RIVAL_BASE_XP_PER_MIN = 10;
+const RIVAL_BASE_XP_PER_MIN = 15;
 
 export function Dashboard({ initialRival }: { initialRival: Rival }) {
   const { toast } = useToast();
@@ -37,29 +36,31 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
 
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskDuration, setNewTaskDuration] = useState("0");
+  const [newTaskXP, setNewTaskXP] = useState("100");
   const [taunt, setTaunt] = useState<string | null>(`WILD ${initialRival.name.toUpperCase()} APPEARED!`);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Persistence
   useEffect(() => {
     localStorage.setItem('rival_xp_state', JSON.stringify(gameState));
   }, [gameState]);
 
-  // Rival Passive XP and Task Timer Tick
+  // Global Timer for Active Tasks & Rival Passive Gain
   useEffect(() => {
     const timer = setInterval(() => {
       setGameState(prev => {
-        // Rival XP Gain (every minute)
-        const rivalGain = RIVAL_BASE_XP_PER_MIN / 60; // Spread per second for smoothness
+        // Rival Passive XP Gain
+        const rivalGain = RIVAL_BASE_XP_PER_MIN / 60;
         const newRivalXp = prev.rival.xp + rivalGain;
         const newRivalLevel = Math.floor(newRivalXp / XP_PER_LEVEL) + 1;
 
         // Timer Tick for Active Tasks
-        let anyCompleted = false;
+        let completedTaskId: string | null = null;
         const updatedTasks = prev.tasks.map(task => {
           if (task.isActive && task.remainingSeconds !== undefined && task.remainingSeconds > 0) {
             const nextSec = task.remainingSeconds - 1;
             if (nextSec === 0) {
-              anyCompleted = true;
+              completedTaskId = task.id;
               return { ...task, remainingSeconds: 0, isActive: false, completed: true };
             }
             return { ...task, remainingSeconds: nextSec };
@@ -68,12 +69,11 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
         });
 
         let newUserXp = prev.user.xp;
-        if (anyCompleted) {
-          const justFinished = updatedTasks.find((t, i) => t.completed && !prev.tasks[i].completed);
-          if (justFinished) {
-            newUserXp += justFinished.xpReward;
-            // Taunt for auto-completed task
-            triggerTaunt(justFinished.title);
+        if (completedTaskId) {
+          const finishedTask = prev.tasks.find(t => t.id === completedTaskId);
+          if (finishedTask) {
+            newUserXp += finishedTask.xpReward;
+            triggerTaunt(finishedTask.title);
           }
         }
 
@@ -103,18 +103,23 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
   const addTask = () => {
     if (!newTaskTitle.trim()) return;
     const duration = parseInt(newTaskDuration) || 0;
+    const xp = parseInt(newTaskXP) || 100;
+    
     const task: Task = {
       id: Math.random().toString(36).substr(2, 9),
       title: newTaskTitle,
-      xpReward: duration > 0 ? duration * 10 + 100 : 80,
+      xpReward: xp,
       completed: false,
       durationMinutes: duration > 0 ? duration : undefined,
       remainingSeconds: duration > 0 ? duration * 60 : undefined,
       isActive: false,
     };
+
     setGameState(prev => ({ ...prev, tasks: [task, ...prev.tasks] }));
     setNewTaskTitle("");
     setNewTaskDuration("0");
+    setNewTaskXP("100");
+    setIsDialogOpen(false);
   };
 
   const completeTask = async (id: string) => {
@@ -148,8 +153,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
         
         {/* Battle Scene */}
         <div className="relative aspect-[21/9] bg-[#e0f8cf] border-[4px] border-black overflow-hidden pixel-shadow mb-6">
-          {/* Rival Side (Top Right) */}
-          <div className="absolute top-4 right-8 z-10">
+          <div className="absolute top-4 right-8 z-10 scale-90 md:scale-100">
              <XPProgress 
                 label={gameState.rival.name} 
                 currentXP={Math.floor(gameState.rival.xp) % XP_PER_LEVEL} 
@@ -158,12 +162,11 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 colorClass="bg-accent"
               />
           </div>
-          <div className="absolute top-4 left-[35%] md:left-[45%]">
-            <Sprite spriteId="rival-pikachu" size={140} />
+          <div className="absolute top-4 left-[40%]">
+            <Sprite spriteId="rival-pikachu" size={120} />
           </div>
 
-          {/* Player Side (Bottom Left) */}
-          <div className="absolute bottom-4 left-8 z-10">
+          <div className="absolute bottom-4 left-8 z-10 scale-90 md:scale-100">
              <XPProgress 
                 label={gameState.user.name} 
                 currentXP={gameState.user.xp % XP_PER_LEVEL} 
@@ -171,14 +174,14 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 level={gameState.user.level}
               />
           </div>
-          <div className="absolute bottom-4 right-[35%] md:right-[45%]">
-            <Sprite spriteId="user-blastoise" size={180} />
+          <div className="absolute bottom-4 right-[40%]">
+            <Sprite spriteId="user-blastoise" size={160} />
           </div>
         </div>
 
         {/* Dialogue Box */}
         <div className="dialogue-box min-h-[100px] flex items-center mb-6 bg-white border-4 border-black p-5 relative">
-          <p className="font-pixel text-[13px] leading-relaxed uppercase w-full pr-8">
+          <p className="font-pixel text-[12px] leading-relaxed uppercase w-full pr-8">
             {taunt || "WHAT WILL YOU DO?"}
           </p>
           {taunt && (
@@ -195,11 +198,11 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
 
         {/* Quest Management */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-7 space-y-4">
+          <div className="lg:col-span-8 space-y-4">
              <h2 className="font-pixel text-[12px] flex items-center gap-2 border-b-2 border-black pb-2">
                 <Zap className="w-4 h-4" /> QUEST LOG
              </h2>
-             <div className="space-y-3 overflow-y-auto max-h-[500px] pr-2 custom-scrollbar">
+             <div className="space-y-3 overflow-y-auto max-h-[600px] pr-2 custom-scrollbar">
                 {gameState.tasks.map(task => (
                   <TaskCard 
                     key={task.id} 
@@ -216,10 +219,10 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
              </div>
           </div>
 
-          <div className="lg:col-span-5 flex flex-col gap-6">
+          <div className="lg:col-span-4 flex flex-col gap-6">
             <h2 className="font-pixel text-[12px] border-b-2 border-black pb-2 uppercase">Actions</h2>
             
-            <Dialog>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="w-full h-16 bg-white text-black border-[3px] border-black hover:bg-muted pixel-shadow rounded-none font-pixel text-[12px] uppercase group">
                   <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" /> 
@@ -228,31 +231,50 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
               </DialogTrigger>
               <DialogContent className="border-[4px] border-black rounded-none bg-white p-6 max-w-sm">
                 <DialogHeader>
-                  <DialogTitle className="font-pixel text-[14px] uppercase">New Quest Data</DialogTitle>
+                  <DialogTitle className="font-pixel text-[14px] uppercase">Quest Data</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <Label className="font-pixel text-[10px]">Quest Title</Label>
+                    <Label className="font-pixel text-[10px] uppercase">Task Name</Label>
                     <Input 
-                      placeholder="ENTER TASK..." 
+                      placeholder="E.G. STUDY..." 
                       value={newTaskTitle} 
                       onChange={(e) => setNewTaskTitle(e.target.value.toUpperCase())}
-                      className="border-[3px] border-black rounded-none h-12 text-lg font-bold"
+                      className="border-[3px] border-black rounded-none h-12 text-lg font-bold uppercase"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label className="font-pixel text-[10px] flex items-center gap-2">
-                      <Clock className="w-3 h-3" /> Duration (MINS, 0 = Normal)
-                    </Label>
-                    <Input 
-                      type="number"
-                      value={newTaskDuration} 
-                      onChange={(e) => setNewTaskDuration(e.target.value)}
-                      className="border-[3px] border-black rounded-none h-12 text-lg font-bold"
-                    />
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="font-pixel text-[10px] flex items-center gap-1 uppercase">
+                        <Heart className="w-3 h-3 text-red-500" /> HP (XP)
+                      </Label>
+                      <Input 
+                        type="number"
+                        value={newTaskXP} 
+                        onChange={(e) => setNewTaskXP(e.target.value)}
+                        className="border-[3px] border-black rounded-none h-12 text-lg font-bold"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="font-pixel text-[10px] flex items-center gap-1 uppercase">
+                        <Clock className="w-3 h-3 text-blue-500" /> MINS
+                      </Label>
+                      <Input 
+                        type="number"
+                        value={newTaskDuration} 
+                        onChange={(e) => setNewTaskDuration(e.target.value)}
+                        className="border-[3px] border-black rounded-none h-12 text-lg font-bold"
+                      />
+                    </div>
                   </div>
+
+                  <p className="text-[10px] font-pixel text-muted-foreground uppercase leading-tight">
+                    * MINS = 0 FOR INSTANT BATTLE
+                  </p>
+
                   <Button 
-                    className="w-full bg-black text-white h-12 rounded-none font-pixel uppercase mt-4"
+                    className="w-full bg-black text-white h-14 rounded-none font-pixel uppercase mt-4 hover:bg-black/90"
                     onClick={addTask}
                   >
                     ADD TO LOG
@@ -261,14 +283,14 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
               </DialogContent>
             </Dialog>
 
-            <div className="mt-auto bg-white border-[3px] border-black p-4 pixel-shadow space-y-3">
+            <div className="bg-white border-[3px] border-black p-4 pixel-shadow space-y-3">
               <div className="flex items-center justify-between font-pixel text-[10px]">
                 <span className="flex items-center gap-2"><Trophy className="w-4 h-4 text-yellow-500" /> STREAK</span>
                 <span>{gameState.user.streak} DAYS</span>
               </div>
               <div className="h-[2px] bg-black/10 w-full" />
-              <div className="font-pixel text-[9px] text-muted-foreground text-center uppercase">
-                Defeat quests to level up!
+              <div className="font-pixel text-[9px] text-muted-foreground text-center uppercase leading-normal">
+                Defeat high HP quests to level up faster!
               </div>
             </div>
           </div>
