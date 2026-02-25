@@ -7,7 +7,7 @@ import { XPProgress } from "./XPProgress";
 import { Sprite } from "./Sprite";
 import { TaskCard } from "./TaskCard";
 import { Button } from "@/components/ui/button";
-import { Plus, Trophy, Zap, Clock, Heart } from "lucide-react";
+import { Plus, Trophy, Zap, Clock, Heart, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { generateRivalActivityTaunt } from "@/ai/flows/rival-activity-taunts-flow";
@@ -24,8 +24,8 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
       if (saved) return JSON.parse(saved);
     }
     return {
-      user: { name: "PLAYER", xp: 0, level: 1, spriteId: 'user-blastoise', streak: 0 },
-      rival: { ...initialRival, spriteId: 'rival-pikachu' },
+      user: { name: "BLASTOISE", xp: 0, level: 1, spriteId: 'user-blastoise', streak: 0 },
+      rival: { ...initialRival, name: "PIKACHU", spriteId: 'rival-pikachu' },
       tasks: [],
       isFocusMode: false,
       lastActive: Date.now(),
@@ -144,6 +144,15 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
     }));
   };
 
+  const clearCompletedTasks = () => {
+    setGameState(prev => ({
+      ...prev,
+      tasks: prev.tasks.filter(t => !t.completed)
+    }));
+  };
+
+  const completedCount = gameState.tasks.filter(t => t.completed).length;
+
   return (
     <div className="min-h-screen bg-[#f0f0f0] p-4 md:p-8 flex flex-col items-center overflow-x-hidden">
       <div className="w-full max-w-4xl space-y-6">
@@ -196,9 +205,21 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
         {/* Quest Management */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-8 space-y-4">
-             <h2 className="font-pixel text-[12px] flex items-center gap-2 border-b-2 border-black pb-2">
-                <Zap className="w-4 h-4" /> QUEST LOG
-             </h2>
+             <div className="flex items-center justify-between border-b-2 border-black pb-2">
+                <h2 className="font-pixel text-[12px] flex items-center gap-2">
+                   <Zap className="w-4 h-4" /> QUEST LOG
+                </h2>
+                {completedCount > 0 && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={clearCompletedTasks}
+                    className="border-2 border-black rounded-none font-pixel text-[8px] h-8 hover:bg-red-50"
+                  >
+                    <Trash2 className="w-3 h-3 mr-1" /> CLEAR DEFEATED
+                  </Button>
+                )}
+             </div>
              <div className="space-y-3 overflow-y-auto max-h-[600px] pr-2 custom-scrollbar">
                 {gameState.tasks.map(task => (
                   <TaskCard 
