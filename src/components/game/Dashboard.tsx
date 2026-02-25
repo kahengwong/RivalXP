@@ -47,12 +47,10 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
   useEffect(() => {
     const timer = setInterval(() => {
       setGameState(prev => {
-        // Rival Passive XP Gain
         const rivalGain = RIVAL_BASE_XP_PER_MIN / 60;
         const newRivalXp = prev.rival.xp + rivalGain;
         const newRivalLevel = Math.floor(newRivalXp / XP_PER_LEVEL) + 1;
 
-        // Timer Tick for Active Tasks
         let completedTaskId: string | null = null;
         const updatedTasks = prev.tasks.map(task => {
           if (task.isActive && task.remainingSeconds !== undefined && task.remainingSeconds > 0) {
@@ -84,7 +82,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [gameState.rival.personality]);
+  }, []);
 
   const triggerTaunt = async (title: string) => {
     try {
@@ -154,11 +152,11 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
   const completedCount = gameState.tasks.filter(t => t.completed).length;
 
   return (
-    <div className="min-h-screen bg-[#f0f0f0] p-4 md:p-8 flex flex-col items-center overflow-x-hidden">
-      <div className="w-full max-w-4xl space-y-6">
+    <div className="min-h-screen bg-[#f5f1f0] p-4 md:p-8 flex flex-col items-center overflow-x-hidden">
+      <div className="w-full max-w-3xl space-y-6">
         
         {/* Battle Scene */}
-        <div className="relative aspect-[21/9] bg-[#e0f8cf] border-[4px] border-black overflow-hidden pixel-shadow mb-6">
+        <div className="relative aspect-[21/9] bg-[#e0f8cf] border-[4px] border-black overflow-hidden pixel-shadow">
           <div className="absolute top-4 right-8 z-10 scale-90 md:scale-100">
              <XPProgress 
                 label={gameState.rival.name} 
@@ -168,8 +166,8 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 colorClass="bg-accent"
               />
           </div>
-          <div className="absolute top-4 left-[40%]">
-            <Sprite spriteId="rival-pikachu" size={120} />
+          <div className="absolute top-4 left-[35%]">
+            <Sprite spriteId="rival-pikachu" size={100} />
           </div>
 
           <div className="absolute bottom-4 left-8 z-10 scale-90 md:scale-100">
@@ -180,13 +178,13 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 level={gameState.user.level}
               />
           </div>
-          <div className="absolute bottom-4 right-[40%]">
-            <Sprite spriteId="user-blastoise" size={160} />
+          <div className="absolute bottom-4 right-[35%]">
+            <Sprite spriteId="user-blastoise" size={140} />
           </div>
         </div>
 
         {/* Dialogue Box */}
-        <div className="dialogue-box min-h-[100px] flex items-center mb-6 bg-white border-4 border-black p-5 relative">
+        <div className="dialogue-box min-h-[80px] flex items-center bg-white border-4 border-black p-4 relative">
           <p className="font-pixel text-[12px] leading-relaxed uppercase w-full pr-8">
             {taunt || "WHAT WILL YOU DO?"}
           </p>
@@ -202,105 +200,97 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
           )}
         </div>
 
-        {/* Quest Management */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-8 space-y-4">
-             <div className="flex items-center justify-between border-b-2 border-black pb-2">
-                <h2 className="font-pixel text-[12px] flex items-center gap-2">
-                   <Zap className="w-4 h-4" /> QUEST LOG
-                </h2>
-                {completedCount > 0 && (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={clearCompletedTasks}
-                    className="border-2 border-black rounded-none font-pixel text-[8px] h-8 hover:bg-red-50"
-                  >
-                    <Trash2 className="w-3 h-3 mr-1" /> CLEAR DEFEATED
-                  </Button>
-                )}
-             </div>
-             <div className="space-y-3 overflow-y-auto max-h-[600px] pr-2 custom-scrollbar">
-                {gameState.tasks.map(task => (
-                  <TaskCard 
-                    key={task.id} 
-                    task={task} 
-                    onComplete={completeTask} 
-                    onToggleTimer={toggleTaskTimer}
-                  />
-                ))}
-                {gameState.tasks.length === 0 && (
-                   <div className="p-12 border-2 border-black border-dashed text-center bg-white/40">
-                    <span className="font-pixel text-[10px] text-muted-foreground uppercase">NO ACTIVE QUESTS</span>
-                   </div>
-                )}
-             </div>
-          </div>
-
-          <div className="lg:col-span-4 flex flex-col gap-6">
-            <h2 className="font-pixel text-[12px] border-b-2 border-black pb-2 uppercase">New Quest</h2>
-            
-            <div className="bg-white border-[4px] border-black p-6 pixel-shadow space-y-4">
-              <div className="space-y-2">
-                <Label className="font-pixel text-[10px] uppercase">Task Name</Label>
-                <Input 
-                  placeholder="E.G. STUDY..." 
-                  value={newTaskTitle} 
-                  onChange={(e) => setNewTaskTitle(e.target.value.toUpperCase())}
-                  className="border-[3px] border-black rounded-none h-12 text-lg font-bold uppercase focus-visible:ring-0"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="font-pixel text-[10px] flex items-center gap-1 uppercase">
-                    <Heart className="w-3 h-3 text-red-500" /> HP (XP)
-                  </Label>
-                  <Input 
-                    type="number"
-                    value={newTaskXP} 
-                    onChange={(e) => setNewTaskXP(e.target.value)}
-                    className="border-[3px] border-black rounded-none h-12 text-lg font-bold focus-visible:ring-0"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="font-pixel text-[10px] flex items-center gap-1 uppercase">
-                    <Clock className="w-3 h-3 text-blue-500" /> MINS
-                  </Label>
-                  <Input 
-                    type="number"
-                    value={newTaskDuration} 
-                    onChange={(e) => setNewTaskDuration(e.target.value)}
-                    className="border-[3px] border-black rounded-none h-12 text-lg font-bold focus-visible:ring-0"
-                  />
-                </div>
-              </div>
-
-              <p className="text-[9px] font-pixel text-muted-foreground uppercase leading-tight">
-                * MINS = 0 FOR INSTANT BATTLE
-              </p>
-
+        {/* Quick Add Quest - Small & Central */}
+        <div className="bg-white border-[4px] border-black p-4 pixel-shadow space-y-3">
+          <h2 className="font-pixel text-[10px] uppercase border-b-2 border-black pb-1 mb-2">New Quest</h2>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+            <div className="md:col-span-6 space-y-1">
+              <Label className="font-pixel text-[8px] uppercase">Task Name</Label>
+              <Input 
+                placeholder="E.G. STUDY..." 
+                value={newTaskTitle} 
+                onChange={(e) => setNewTaskTitle(e.target.value.toUpperCase())}
+                className="border-[3px] border-black rounded-none h-10 text-sm font-bold uppercase focus-visible:ring-0"
+              />
+            </div>
+            <div className="md:col-span-2 space-y-1">
+              <Label className="font-pixel text-[8px] uppercase flex items-center gap-1">
+                <Heart className="w-2 h-2 text-red-500" /> HP
+              </Label>
+              <Input 
+                type="number"
+                value={newTaskXP} 
+                onChange={(e) => setNewTaskXP(e.target.value)}
+                className="border-[3px] border-black rounded-none h-10 text-sm font-bold focus-visible:ring-0"
+              />
+            </div>
+            <div className="md:col-span-2 space-y-1">
+              <Label className="font-pixel text-[8px] uppercase flex items-center gap-1">
+                <Clock className="w-2 h-2 text-blue-500" /> MIN
+              </Label>
+              <Input 
+                type="number"
+                value={newTaskDuration} 
+                onChange={(e) => setNewTaskDuration(e.target.value)}
+                className="border-[3px] border-black rounded-none h-10 text-sm font-bold focus-visible:ring-0"
+              />
+            </div>
+            <div className="md:col-span-2">
               <Button 
-                className="w-full bg-black text-white h-14 rounded-none font-pixel uppercase mt-2 hover:bg-black/90 active:scale-95 transition-transform"
+                className="w-full bg-black text-white h-10 rounded-none font-pixel text-[10px] uppercase hover:bg-black/90"
                 onClick={addTask}
               >
-                <Plus className="w-4 h-4 mr-2" /> ADD TO LOG
+                <Plus className="w-3 h-3 mr-1" /> ADD
               </Button>
-            </div>
-
-            <div className="bg-white border-[3px] border-black p-4 pixel-shadow space-y-3">
-              <div className="flex items-center justify-between font-pixel text-[10px]">
-                <span className="flex items-center gap-2"><Trophy className="w-4 h-4 text-yellow-500" /> STREAK</span>
-                <span>{gameState.user.streak} DAYS</span>
-              </div>
-              <div className="h-[2px] bg-black/10 w-full" />
-              <div className="font-pixel text-[9px] text-muted-foreground text-center uppercase leading-normal">
-                Defeat high HP quests to level up faster!
-              </div>
             </div>
           </div>
         </div>
 
+        {/* Quest Log - History below */}
+        <div className="space-y-4 pb-12">
+          <div className="flex items-center justify-between border-b-2 border-black pb-2">
+            <h2 className="font-pixel text-[12px] flex items-center gap-2">
+               <Zap className="w-4 h-4" /> QUEST LOG
+            </h2>
+            {completedCount > 0 && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={clearCompletedTasks}
+                className="border-2 border-black rounded-none font-pixel text-[8px] h-8 hover:bg-red-50"
+              >
+                <Trash2 className="w-3 h-3 mr-1" /> CLEAR DEFEATED
+              </Button>
+            )}
+          </div>
+          
+          <div className="space-y-3">
+            {gameState.tasks.map(task => (
+              <TaskCard 
+                key={task.id} 
+                task={task} 
+                onComplete={completeTask} 
+                onToggleTimer={toggleTaskTimer}
+              />
+            ))}
+            {gameState.tasks.length === 0 && (
+               <div className="p-8 border-2 border-black border-dashed text-center bg-white/40">
+                <span className="font-pixel text-[10px] text-muted-foreground uppercase">NO ACTIVE QUESTS</span>
+               </div>
+            )}
+          </div>
+        </div>
+
+      </div>
+
+      {/* Stats Overlay - Optional Floating */}
+      <div className="fixed bottom-4 right-4 bg-white border-[3px] border-black p-3 pixel-shadow hidden md:block">
+        <div className="flex items-center gap-4 font-pixel text-[10px] uppercase">
+          <div className="flex items-center gap-2">
+            <Trophy className="w-4 h-4 text-yellow-500" /> 
+            <span>STREAK: {gameState.user.streak} DAYS</span>
+          </div>
+        </div>
       </div>
     </div>
   );
