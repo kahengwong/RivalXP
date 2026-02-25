@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -10,9 +11,7 @@ import { Plus, Flame, Moon, Trophy } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateRivalActivityTaunt } from "@/ai/flows/rival-activity-taunts-flow";
-import { rivalInactivityTaunts } from "@/ai/flows/rival-inactivity-taunts-flow";
 import { useToast } from "@/hooks/use-toast";
 
 const XP_PER_LEVEL = 1000;
@@ -37,9 +36,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
   });
 
   const [newTaskTitle, setNewTaskTitle] = useState("");
-  const [newTaskType, setNewTaskType] = useState<"binary" | "timed">("binary");
-  const [newTaskDuration, setNewTaskDuration] = useState("30");
-  const [taunt, setTaunt] = useState<string | null>(null);
+  const [taunt, setTaunt] = useState<string | null>(`I'M ${gameState.rival.name}! PREPARE TO LOSE!`);
 
   useEffect(() => {
     localStorage.setItem('rival_xp_state', JSON.stringify(gameState));
@@ -66,12 +63,9 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
     const task: Task = {
       id: Math.random().toString(36).substr(2, 9),
       title: newTaskTitle.toUpperCase(),
-      type: newTaskType,
-      duration: newTaskType === 'timed' ? parseInt(newTaskDuration) : undefined,
-      xpReward: newTaskType === 'timed' ? parseInt(newTaskDuration) * 2 : 50,
+      type: 'binary',
+      xpReward: 50,
       completed: false,
-      timeRemaining: newTaskType === 'timed' ? parseInt(newTaskDuration) * 60 : undefined,
-      isTimerRunning: false,
     };
     setGameState(prev => ({ ...prev, tasks: [task, ...prev.tasks] }));
     setNewTaskTitle("");
@@ -105,134 +99,105 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#f0f0f0] p-4 md:p-8 font-body">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="min-h-screen bg-[#c8c8c8] p-4 md:p-8 flex flex-col items-center">
+      <div className="w-full max-w-2xl space-y-6">
         
-        {/* Battle Header */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 border-4 border-black bg-white pixel-shadow flex flex-col items-center gap-2">
-            <Sprite spriteId="user" size={80} />
-            <XPProgress 
-              label={gameState.user.name} 
-              currentXP={gameState.user.xp % XP_PER_LEVEL} 
-              nextLevelXP={XP_PER_LEVEL}
-              level={gameState.user.level}
-            />
+        {/* Battle Scene */}
+        <div className="relative aspect-video bg-[#e0f8cf] border-[6px] border-black overflow-hidden pixel-shadow mb-8">
+          {/* Rival Side */}
+          <div className="absolute top-4 right-4 text-right">
+             <XPProgress 
+                label={gameState.rival.name} 
+                currentXP={Math.floor(gameState.rival.xp) % XP_PER_LEVEL} 
+                nextLevelXP={XP_PER_LEVEL}
+                level={gameState.rival.level}
+                colorClass="bg-accent"
+              />
           </div>
-          <div className="p-4 border-4 border-black bg-white pixel-shadow flex flex-col items-center gap-2">
-            <Sprite spriteId="rival" size={80} />
-            <XPProgress 
-              label={gameState.rival.name} 
-              currentXP={Math.floor(gameState.rival.xp) % XP_PER_LEVEL} 
-              nextLevelXP={XP_PER_LEVEL}
-              level={gameState.rival.level}
-              colorClass="bg-accent"
-            />
+          <div className="absolute top-12 left-12">
+            <Sprite spriteId="rival" size={140} />
+          </div>
+
+          {/* Player Side */}
+          <div className="absolute bottom-12 right-12">
+            <Sprite spriteId="user" size={140} />
+          </div>
+          <div className="absolute bottom-4 left-4">
+             <XPProgress 
+                label={gameState.user.name} 
+                currentXP={gameState.user.xp % XP_PER_LEVEL} 
+                nextLevelXP={XP_PER_LEVEL}
+                level={gameState.user.level}
+              />
           </div>
         </div>
 
-        {/* Rival Dialogue Box */}
-        {taunt && (
-          <div className="relative p-6 border-4 border-black bg-white pixel-shadow">
-            <div className="absolute -top-4 left-6 bg-black text-white px-2 font-pixel text-[8px] uppercase">
-              {gameState.rival.name}
-            </div>
-            <p className="font-pixel text-[10px] leading-relaxed uppercase">"{taunt}"</p>
-            <Button 
-              size="sm" 
-              variant="ghost" 
-              className="absolute top-2 right-2 hover:bg-muted"
-              onClick={() => setTaunt(null)}
-            >
-              ×
-            </Button>
-          </div>
-        )}
+        {/* Dialogue Box */}
+        <div className="dialogue-box min-h-[100px] flex items-center mb-6">
+          <p className="font-pixel text-[12px] leading-relaxed w-full">
+            {taunt || "WHAT WILL YOU DO?"}
+          </p>
+          {taunt && (
+             <Button 
+             variant="ghost" 
+             size="sm"
+             className="absolute bottom-2 right-2 animate-bounce"
+             onClick={() => setTaunt(null)}
+           >
+             ▼
+           </Button>
+          )}
+        </div>
 
-        {/* Focus Mode */}
-        {gameState.isFocusMode && (
-          <div className="bg-primary text-white p-3 border-4 border-black font-pixel text-[10px] uppercase flex items-center justify-center gap-4">
-            <Flame className="w-4 h-4" />
-            Focus Active: Rival slowed
-            <Flame className="w-4 h-4" />
+        {/* Action Menu */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-4">
+             <h2 className="font-pixel text-[10px] mb-2 text-black">QUEST LOG</h2>
+             <div className="space-y-3 overflow-y-auto max-h-[300px] pr-2">
+                {gameState.tasks.map(task => (
+                  <TaskCard key={task.id} task={task} onComplete={completeTask} onTimerToggle={() => {}} onTimerReset={() => {}} />
+                ))}
+                {gameState.tasks.length === 0 && (
+                   <div className="p-4 border-4 border-black border-dashed text-center bg-white/50">
+                    <span className="font-pixel text-[8px] text-muted-foreground">EMPTY LOG</span>
+                   </div>
+                )}
+             </div>
           </div>
-        )}
 
-        {/* Quests */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-pixel uppercase">Quest Log</h2>
+          <div className="space-y-4 flex flex-col">
+            <h2 className="font-pixel text-[10px] mb-2 text-black">ACTIONS</h2>
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="bg-white text-black font-pixel text-[10px] border-4 border-black hover:bg-muted pixel-shadow rounded-none">
-                  <Plus className="w-4 h-4 mr-2" /> New Quest
+                <Button className="w-full h-16 bg-white text-black border-4 border-black hover:bg-muted pixel-shadow rounded-none">
+                  NEW QUEST
                 </Button>
               </DialogTrigger>
-              <DialogContent className="border-4 border-black rounded-none font-pixel">
+              <DialogContent className="border-[6px] border-black rounded-none">
                 <DialogHeader>
-                  <DialogTitle className="text-sm uppercase">Select Quest</DialogTitle>
+                  <DialogTitle className="font-pixel text-[12px]">CHOOSE QUEST</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-6 py-4">
-                  <div className="space-y-2">
-                    <Label className="text-[8px] uppercase">Goal</Label>
-                    <Input 
-                      placeholder="QUEST TITLE" 
-                      value={newTaskTitle} 
-                      onChange={(e) => setNewTaskTitle(e.target.value)}
-                      className="border-4 border-black rounded-none"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-[8px] uppercase">Type</Label>
-                      <Select value={newTaskType} onValueChange={(v: any) => setNewTaskType(v)}>
-                        <SelectTrigger className="border-4 border-black rounded-none">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="font-pixel text-[10px]">
-                          <SelectItem value="binary">Battle</SelectItem>
-                          <SelectItem value="timed">Training</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
+                <div className="space-y-4 py-4">
+                  <Input 
+                    placeholder="TASK NAME" 
+                    value={newTaskTitle} 
+                    onChange={(e) => setNewTaskTitle(e.target.value)}
+                    className="border-4 border-black rounded-none h-12"
+                  />
                   <Button 
-                    className="w-full bg-primary text-white text-[10px] h-12 border-4 border-black rounded-none pixel-shadow"
+                    className="w-full bg-black text-white h-12 rounded-none"
                     onClick={addTask}
                   >
-                    Set Quest
+                    ADD TO LOG
                   </Button>
                 </div>
               </DialogContent>
             </Dialog>
-          </div>
-
-          <div className="grid gap-4">
-            {gameState.tasks.length === 0 ? (
-              <div className="p-12 text-center border-4 border-black border-dashed bg-white/50">
-                <p className="font-pixel text-[8px] uppercase text-muted-foreground tracking-tighter">Your rival is waiting... Add a quest!</p>
-              </div>
-            ) : (
-              gameState.tasks.map(task => (
-                <TaskCard 
-                  key={task.id} 
-                  task={task} 
-                  onComplete={completeTask}
-                  onTimerToggle={() => {}} // Simplified for focus
-                  onTimerReset={() => {}}
-                />
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="flex justify-center gap-8 text-[8px] font-pixel uppercase text-muted-foreground pt-12">
-          <div className="flex items-center gap-1">
-            <Moon className="w-3 h-3" /> Day End: 23:59
-          </div>
-          <div className="flex items-center gap-1">
-            <Trophy className="w-3 h-3" /> Win Streak: {gameState.user.streak}
+            
+            <div className="mt-auto grid grid-cols-2 gap-2 text-[8px] font-pixel text-muted-foreground bg-white/30 p-2 border-2 border-black border-dashed">
+              <div className="flex items-center gap-1"><Trophy className="w-3 h-3" /> STREAK: {gameState.user.streak}</div>
+              <div className="flex items-center gap-1"><Moon className="w-3 h-3" /> 23:59</div>
+            </div>
           </div>
         </div>
 

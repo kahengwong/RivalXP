@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -30,21 +31,20 @@ export function RivalSetup({ onComplete }: RivalSetupProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-[#f0f0f0] pattern-bg">
-      <Card className="w-full max-w-md border-4 border-black pixel-shadow bg-white rounded-none">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[#c8c8c8]">
+      <Card className="w-full max-w-md border-[6px] border-black pixel-shadow bg-white rounded-none">
         <CardHeader className="text-center pb-2">
-          <CardTitle className="text-xl font-pixel uppercase leading-loose">New Game</CardTitle>
-          <p className="text-xs font-pixel text-muted-foreground mt-2">Identify your Rival.</p>
+          <CardTitle className="text-lg font-pixel uppercase tracking-tighter">New Rival</CardTitle>
+          <div className="h-1 w-full bg-black my-2" />
         </CardHeader>
-        <CardContent className="space-y-8">
-          <div className="flex justify-center py-4 bg-muted/20 border-2 border-black border-dashed">
-            <Sprite spriteId="rival" size={120} />
+        <CardContent className="space-y-6">
+          <div className="flex justify-center py-4 bg-[#e0f8cf] border-4 border-black">
+            <Sprite spriteId="rival" size={140} />
           </div>
 
-          <div className="space-y-4">
-            <Label htmlFor="rival-name" className="font-pixel text-[10px] uppercase">Rival's Name?</Label>
+          <div className="space-y-3">
+            <Label className="font-pixel text-[10px]">THEIR NAME?</Label>
             <Input 
-              id="rival-name" 
               value={name} 
               onChange={(e) => setName(e.target.value.toUpperCase())}
               className="border-4 border-black font-pixel text-sm rounded-none h-12 focus-visible:ring-0"
@@ -52,8 +52,8 @@ export function RivalSetup({ onComplete }: RivalSetupProps) {
             />
           </div>
 
-          <div className="space-y-4">
-            <Label className="font-pixel text-[10px] uppercase">Personality</Label>
+          <div className="space-y-3">
+            <Label className="font-pixel text-[10px]">PERSONALITY</Label>
             <RadioGroup 
               value={personality} 
               onValueChange={(v) => setPersonality(v as PersonalityTone)}
@@ -65,11 +65,11 @@ export function RivalSetup({ onComplete }: RivalSetupProps) {
                   <Label 
                     htmlFor={p}
                     className={cn(
-                      "flex items-center p-3 border-4 border-black cursor-pointer font-pixel text-[10px] uppercase transition-all",
+                      "flex items-center p-3 border-4 border-black cursor-pointer font-pixel text-[8px] transition-all",
                       personality === p ? "bg-black text-white" : "bg-white hover:bg-muted"
                     )}
                   >
-                    {personality === p ? "> " : "  "}{p}
+                    {personality === p ? "▶ " : "  "}{p}
                   </Label>
                 </div>
               ))}
@@ -78,10 +78,10 @@ export function RivalSetup({ onComplete }: RivalSetupProps) {
         </CardContent>
         <CardFooter>
           <Button 
-            className="w-full h-16 bg-primary text-white font-pixel text-sm uppercase border-4 border-black rounded-none pixel-shadow hover:translate-y-1 hover:pixel-shadow-none transition-all"
+            className="w-full h-16 bg-black text-white font-pixel text-sm border-none rounded-none hover:bg-black/80 transition-all"
             onClick={handleSubmit}
           >
-            Confirm
+            START GAME
           </Button>
         </CardFooter>
       </Card>

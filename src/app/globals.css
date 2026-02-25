@@ -1,29 +1,30 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
+    --background: 0 0% 90%; /* Classic GB Light Grey */
     --foreground: 0 0% 10%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
-    --primary: 215 100% 50%; /* Classic Blue */
+    --primary: 142 70% 45%; /* Pokemon HP Green */
     --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 90%;
     --secondary-foreground: 0 0% 10%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 84% 60%; /* Classic Red */
+    --muted: 0 0% 85%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 0 84% 60%; /* Rival Red */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 0%; /* Black Borders for Retro feel */
-    --input: 0 0% 89.8%;
-    --ring: 215 100% 50%;
-    --radius: 0rem; /* Hard edges for pixel look */
+    --border: 0 0% 0%;
+    --input: 0 0% 100%;
+    --ring: 0 0% 0%;
+    --radius: 0rem;
   }
 }
 
@@ -32,10 +33,10 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body antialiased;
   }
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-pixel;
+  h1, h2, h3, h4, h5, h6, button, input, label {
+    @apply font-pixel uppercase tracking-tighter;
   }
 }
 
@@ -44,24 +45,28 @@
     font-family: 'Press Start 2P', cursive;
   }
   .pixel-shadow {
-    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+    box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 1);
   }
   .pixel-border {
     border: 4px solid #000;
   }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+  .dialogue-box {
+    @apply bg-white border-[6px] border-black p-4 relative;
+    box-shadow: inset -4px -4px 0px #ccc;
+  }
 }
 
 .pixelated {
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }

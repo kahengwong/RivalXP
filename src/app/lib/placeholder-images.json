@@ -1,16 +1,17 @@
+
 {
   "placeholderImages": [
     {
       "id": "rival-sprite",
-      "description": "Pixel art rival monster",
-      "imageUrl": "https://picsum.photos/seed/poke-rival/128/128",
+      "description": "Retro pixel art monster rival",
+      "imageUrl": "https://picsum.photos/seed/pixel-mon-99/128/128",
       "imageHint": "pixel monster"
     },
     {
       "id": "user-sprite",
-      "description": "Pixel art hero character",
-      "imageUrl": "https://picsum.photos/seed/poke-hero/128/128",
-      "imageHint": "pixel hero"
+      "description": "Retro pixel art hero trainer",
+      "imageUrl": "https://picsum.photos/seed/pixel-boy-22/128/128",
+      "imageHint": "pixel trainer"
     }
   ]
 }
