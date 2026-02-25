@@ -185,8 +185,8 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
         <div className="relative aspect-[16/10] md:aspect-[21/9] bg-[#e0f8cf] border-[4px] border-black overflow-hidden pixel-shadow">
           <div className="absolute inset-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:24px_24px] opacity-5" />
           
-          {/* Rival HP (Top Right) - Yellow Side / Pikachu */}
-          <div className="absolute top-2 right-2 md:top-6 md:right-6 z-10 scale-90 sm:scale-100 origin-top-right">
+          {/* Rival HP (Top Left) - Yellow Side / Pikachu */}
+          <div className="absolute top-2 left-2 md:top-6 md:left-6 z-10 scale-90 sm:scale-100 origin-top-left">
              <XPProgress 
                 label={gameState.rival.name} 
                 currentXP={Math.floor(gameState.rival.xp) % XP_PER_LEVEL} 
@@ -195,12 +195,12 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 colorClass="bg-accent"
               />
           </div>
-          <div className="absolute top-[15%] left-[5%] md:left-[20%]">
-            <Sprite spriteId="rival-pikachu" size={90} className="md:w-[130px]" />
+          <div className="absolute top-[10%] right-[5%] md:right-[15%]">
+            <Sprite spriteId="rival-pikachu" size={120} className="md:w-[180px]" />
           </div>
 
-          {/* User HP (Bottom Left) - Blue Side / Blastoise */}
-          <div className="absolute bottom-2 left-2 md:bottom-6 md:left-6 z-10 scale-90 sm:scale-100 origin-bottom-left">
+          {/* User HP (Bottom Right) - Blue Side / Blastoise */}
+          <div className="absolute bottom-2 right-2 md:bottom-6 md:right-6 z-10 scale-90 sm:scale-100 origin-bottom-right">
              <XPProgress 
                 label={gameState.user.name} 
                 currentXP={gameState.user.xp % XP_PER_LEVEL} 
@@ -209,8 +209,8 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 colorClass="bg-[#70c0a8]"
               />
           </div>
-          <div className="absolute bottom-[15%] right-[5%] md:right-[20%]">
-            <Sprite spriteId="user-blastoise" size={110} className="md:w-[160px]" />
+          <div className="absolute bottom-[10%] left-[5%] md:left-[15%]">
+            <Sprite spriteId="user-blastoise" size={140} className="md:w-[200px]" />
           </div>
 
           {gameState.isFocusMode && (
