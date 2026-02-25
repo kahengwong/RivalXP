@@ -38,12 +38,10 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
   const [newTaskXP, setNewTaskXP] = useState("100");
   const [taunt, setTaunt] = useState<string | null>(`WILD ${initialRival.name.toUpperCase()} APPEARED!`);
 
-  // Persistence
   useEffect(() => {
     localStorage.setItem('rival_xp_state', JSON.stringify(gameState));
   }, [gameState]);
 
-  // Global Timer for Active Tasks & Rival Passive Gain
   useEffect(() => {
     const timer = setInterval(() => {
       setGameState(prev => {
@@ -156,8 +154,9 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
       <div className="w-full max-w-3xl space-y-6">
         
         {/* Battle Scene */}
-        <div className="relative aspect-[21/9] bg-[#e0f8cf] border-[4px] border-black overflow-hidden pixel-shadow">
-          <div className="absolute top-4 right-8 z-10 scale-90 md:scale-100">
+        <div className="relative aspect-[16/9] md:aspect-[21/9] bg-[#e0f8cf] border-[4px] border-black overflow-hidden pixel-shadow">
+          {/* Rival HP (Top Right) */}
+          <div className="absolute top-2 right-2 md:top-4 md:right-8 z-10">
              <XPProgress 
                 label={gameState.rival.name} 
                 currentXP={Math.floor(gameState.rival.xp) % XP_PER_LEVEL} 
@@ -166,11 +165,12 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 colorClass="bg-accent"
               />
           </div>
-          <div className="absolute top-4 left-[35%]">
+          <div className="absolute top-8 left-[15%] md:left-[35%]">
             <Sprite spriteId="rival-pikachu" size={100} />
           </div>
 
-          <div className="absolute bottom-4 left-8 z-10 scale-90 md:scale-100">
+          {/* User HP (Bottom Left) */}
+          <div className="absolute bottom-2 left-2 md:bottom-4 md:left-8 z-10">
              <XPProgress 
                 label={gameState.user.name} 
                 currentXP={gameState.user.xp % XP_PER_LEVEL} 
@@ -178,14 +178,14 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 level={gameState.user.level}
               />
           </div>
-          <div className="absolute bottom-4 right-[35%]">
+          <div className="absolute bottom-4 right-[15%] md:right-[35%]">
             <Sprite spriteId="user-blastoise" size={140} />
           </div>
         </div>
 
         {/* Dialogue Box */}
         <div className="dialogue-box min-h-[80px] flex items-center bg-white border-4 border-black p-4 relative">
-          <p className="font-pixel text-[12px] leading-relaxed uppercase w-full pr-8">
+          <p className="font-pixel text-[11px] md:text-[12px] leading-relaxed uppercase w-full pr-8">
             {taunt || "WHAT WILL YOU DO?"}
           </p>
           {taunt && (
@@ -200,7 +200,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
           )}
         </div>
 
-        {/* Quick Add Quest - Small & Central */}
+        {/* Quick Add Quest - Directly below Dialogue */}
         <div className="bg-white border-[4px] border-black p-4 pixel-shadow space-y-3">
           <h2 className="font-pixel text-[10px] uppercase border-b-2 border-black pb-1 mb-2">New Quest</h2>
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
@@ -246,7 +246,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
           </div>
         </div>
 
-        {/* Quest Log - History below */}
+        {/* Quest Log */}
         <div className="space-y-4 pb-12">
           <div className="flex items-center justify-between border-b-2 border-black pb-2">
             <h2 className="font-pixel text-[12px] flex items-center gap-2">
@@ -283,7 +283,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
 
       </div>
 
-      {/* Stats Overlay - Optional Floating */}
+      {/* Stats Overlay */}
       <div className="fixed bottom-4 right-4 bg-white border-[3px] border-black p-3 pixel-shadow hidden md:block">
         <div className="flex items-center gap-4 font-pixel text-[10px] uppercase">
           <div className="flex items-center gap-2">
