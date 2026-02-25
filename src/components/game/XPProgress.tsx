@@ -14,7 +14,7 @@ interface XPProgressProps {
 export function XPProgress({ label, currentXP, nextLevelXP, colorClass, level }: XPProgressProps) {
   const percentage = Math.min(100, (currentXP / nextLevelXP) * 100);
   
-  // 模拟宝可梦经典的 HP 颜色变化：绿色 > 黄色 > 橙色
+  // Simulated Pokemon style HP bar colors
   const barColor = colorClass || (percentage > 50 ? "bg-[#70c0a8]" : percentage > 20 ? "bg-[#f8d030]" : "bg-[#f08030]");
 
   return (

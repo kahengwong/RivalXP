@@ -158,11 +158,11 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
     <div className="min-h-screen bg-[#f5f1f0] p-4 md:p-8 flex flex-col items-center overflow-x-hidden">
       <div className="w-full max-w-4xl space-y-4">
         
-        {/* Battle Scene */}
+        {/* Battle Scene: Blue (Player) vs Yellow (Rival) */}
         <div className="relative aspect-[16/10] md:aspect-[21/9] bg-[#e0f8cf] border-[4px] border-black overflow-hidden pixel-shadow">
           <div className="absolute inset-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:24px_24px] opacity-5" />
           
-          {/* Rival HP (Top Right) */}
+          {/* Rival HP (Top Right) - Yellow Side */}
           <div className="absolute top-2 right-2 md:top-6 md:right-6 z-10">
              <XPProgress 
                 label={gameState.rival.name} 
@@ -176,13 +176,14 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
             <Sprite spriteId="rival-pikachu" size={80} className="md:w-[120px]" />
           </div>
 
-          {/* User HP (Bottom Left) */}
+          {/* User HP (Bottom Left) - Blue Side */}
           <div className="absolute bottom-2 left-2 md:bottom-6 md:left-6 z-10">
              <XPProgress 
                 label={gameState.user.name} 
                 currentXP={gameState.user.xp % XP_PER_LEVEL} 
                 nextLevelXP={XP_PER_LEVEL}
                 level={gameState.user.level}
+                colorClass="bg-[#70c0a8]"
               />
           </div>
           <div className="absolute bottom-[20%] right-[10%] md:right-[25%]">
@@ -213,7 +214,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
           )}
         </div>
 
-        {/* Compact Add Task Box */}
+        {/* Compact Add Task Box - Directly under dialogue */}
         <div className="bg-white border-[4px] border-black p-4 pixel-shadow">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
             <div className="md:col-span-6 space-y-1.5">
