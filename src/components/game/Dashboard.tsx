@@ -7,7 +7,7 @@ import { XPProgress } from "./XPProgress";
 import { Sprite } from "./Sprite";
 import { TaskCard } from "./TaskCard";
 import { Button } from "@/components/ui/button";
-import { Plus, Trophy, Zap, Trash2, Heart, Clock } from "lucide-react";
+import { Trophy, Zap, Trash2, Heart, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { generateRivalActivityTaunt } from "@/ai/flows/rival-activity-taunts-flow";
@@ -26,7 +26,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
     }
     return {
       user: { name: "BLASTOISE", xp: 0, level: 1, spriteId: 'user-blastoise', streak: 0 },
-      rival: { ...initialRival, spriteId: 'rival-pikachu' },
+      rival: { ...initialRival, name: "PIKACHU", spriteId: 'rival-pikachu' },
       tasks: [],
       isFocusMode: false,
       lastActive: Date.now(),
@@ -37,7 +37,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskDuration, setNewTaskDuration] = useState("0");
   const [newTaskXP, setNewTaskXP] = useState("100");
-  const [taunt, setTaunt] = useState<string | null>(`WILD ${initialRival.name.toUpperCase()} APPEARED!`);
+  const [taunt, setTaunt] = useState<string | null>(`WILD PIKACHU APPEARED!`);
 
   useEffect(() => {
     localStorage.setItem('rival_xp_state', JSON.stringify(gameState));
@@ -163,7 +163,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
           <div className="absolute inset-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:24px_24px] opacity-5" />
           
           {/* Rival HP (Top Right) */}
-          <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 scale-75 xs:scale-90 md:scale-100 origin-top-right">
+          <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 origin-top-right">
              <XPProgress 
                 label={gameState.rival.name} 
                 currentXP={Math.floor(gameState.rival.xp) % XP_PER_LEVEL} 
@@ -172,12 +172,12 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 colorClass="bg-accent"
               />
           </div>
-          <div className="absolute top-[20%] left-[10%] md:left-[30%]">
-            <Sprite spriteId="rival-pikachu" size={90} />
+          <div className="absolute top-[15%] left-[10%] md:left-[25%]">
+            <Sprite spriteId="rival-pikachu" size={100} />
           </div>
 
           {/* User HP (Bottom Left) */}
-          <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 z-10 scale-75 xs:scale-90 md:scale-100 origin-bottom-left">
+          <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 z-10 origin-bottom-left">
              <XPProgress 
                 label={gameState.user.name} 
                 currentXP={gameState.user.xp % XP_PER_LEVEL} 
@@ -185,8 +185,8 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
                 level={gameState.user.level}
               />
           </div>
-          <div className="absolute bottom-[20%] right-[10%] md:right-[30%]">
-            <Sprite spriteId="user-blastoise" size={120} />
+          <div className="absolute bottom-[15%] right-[10%] md:right-[25%]">
+            <Sprite spriteId="user-blastoise" size={130} />
           </div>
 
           {gameState.isFocusMode && (
@@ -213,7 +213,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
           )}
         </div>
 
-        {/* Add Task Box - Compact and Inline */}
+        {/* Compact Add Task Box */}
         <div className="bg-white border-[4px] border-black p-3 pixel-shadow">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
             <div className="md:col-span-6 space-y-1">
@@ -254,7 +254,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
           </div>
         </div>
 
-        {/* Quest Log */}
+        {/* Quest Log (History) */}
         <div className="space-y-3 pb-12">
           <div className="flex items-center justify-between border-b-2 border-black pb-1">
             <h2 className="font-pixel text-[12px] flex items-center gap-2">
@@ -289,16 +289,6 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
           </div>
         </div>
 
-      </div>
-
-      {/* Stats Overlay */}
-      <div className="fixed bottom-4 right-4 bg-white border-[3px] border-black p-3 pixel-shadow hidden md:block">
-        <div className="flex items-center gap-4 font-pixel text-[10px] uppercase">
-          <div className="flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-yellow-500" /> 
-            <span>STREAK: {gameState.user.streak} DAYS</span>
-          </div>
-        </div>
       </div>
     </div>
   );
