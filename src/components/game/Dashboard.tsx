@@ -8,7 +8,6 @@ import { Sprite } from "./Sprite";
 import { TaskCard } from "./TaskCard";
 import { Button } from "@/components/ui/button";
 import { Plus, Trophy, Zap, Clock, Heart } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { generateRivalActivityTaunt } from "@/ai/flows/rival-activity-taunts-flow";
@@ -38,7 +37,6 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
   const [newTaskDuration, setNewTaskDuration] = useState("0");
   const [newTaskXP, setNewTaskXP] = useState("100");
   const [taunt, setTaunt] = useState<string | null>(`WILD ${initialRival.name.toUpperCase()} APPEARED!`);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Persistence
   useEffect(() => {
@@ -119,7 +117,6 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
     setNewTaskTitle("");
     setNewTaskDuration("0");
     setNewTaskXP("100");
-    setIsDialogOpen(false);
   };
 
   const completeTask = async (id: string) => {
@@ -220,68 +217,55 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
           </div>
 
           <div className="lg:col-span-4 flex flex-col gap-6">
-            <h2 className="font-pixel text-[12px] border-b-2 border-black pb-2 uppercase">Actions</h2>
+            <h2 className="font-pixel text-[12px] border-b-2 border-black pb-2 uppercase">New Quest</h2>
             
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="w-full h-16 bg-white text-black border-[3px] border-black hover:bg-muted pixel-shadow rounded-none font-pixel text-[12px] uppercase group">
-                  <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" /> 
-                  NEW QUEST
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="border-[4px] border-black rounded-none bg-white p-6 max-w-sm">
-                <DialogHeader>
-                  <DialogTitle className="font-pixel text-[14px] uppercase">Quest Data</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <Label className="font-pixel text-[10px] uppercase">Task Name</Label>
-                    <Input 
-                      placeholder="E.G. STUDY..." 
-                      value={newTaskTitle} 
-                      onChange={(e) => setNewTaskTitle(e.target.value.toUpperCase())}
-                      className="border-[3px] border-black rounded-none h-12 text-lg font-bold uppercase"
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label className="font-pixel text-[10px] flex items-center gap-1 uppercase">
-                        <Heart className="w-3 h-3 text-red-500" /> HP (XP)
-                      </Label>
-                      <Input 
-                        type="number"
-                        value={newTaskXP} 
-                        onChange={(e) => setNewTaskXP(e.target.value)}
-                        className="border-[3px] border-black rounded-none h-12 text-lg font-bold"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="font-pixel text-[10px] flex items-center gap-1 uppercase">
-                        <Clock className="w-3 h-3 text-blue-500" /> MINS
-                      </Label>
-                      <Input 
-                        type="number"
-                        value={newTaskDuration} 
-                        onChange={(e) => setNewTaskDuration(e.target.value)}
-                        className="border-[3px] border-black rounded-none h-12 text-lg font-bold"
-                      />
-                    </div>
-                  </div>
-
-                  <p className="text-[10px] font-pixel text-muted-foreground uppercase leading-tight">
-                    * MINS = 0 FOR INSTANT BATTLE
-                  </p>
-
-                  <Button 
-                    className="w-full bg-black text-white h-14 rounded-none font-pixel uppercase mt-4 hover:bg-black/90"
-                    onClick={addTask}
-                  >
-                    ADD TO LOG
-                  </Button>
+            <div className="bg-white border-[4px] border-black p-6 pixel-shadow space-y-4">
+              <div className="space-y-2">
+                <Label className="font-pixel text-[10px] uppercase">Task Name</Label>
+                <Input 
+                  placeholder="E.G. STUDY..." 
+                  value={newTaskTitle} 
+                  onChange={(e) => setNewTaskTitle(e.target.value.toUpperCase())}
+                  className="border-[3px] border-black rounded-none h-12 text-lg font-bold uppercase focus-visible:ring-0"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="font-pixel text-[10px] flex items-center gap-1 uppercase">
+                    <Heart className="w-3 h-3 text-red-500" /> HP (XP)
+                  </Label>
+                  <Input 
+                    type="number"
+                    value={newTaskXP} 
+                    onChange={(e) => setNewTaskXP(e.target.value)}
+                    className="border-[3px] border-black rounded-none h-12 text-lg font-bold focus-visible:ring-0"
+                  />
                 </div>
-              </DialogContent>
-            </Dialog>
+                <div className="space-y-2">
+                  <Label className="font-pixel text-[10px] flex items-center gap-1 uppercase">
+                    <Clock className="w-3 h-3 text-blue-500" /> MINS
+                  </Label>
+                  <Input 
+                    type="number"
+                    value={newTaskDuration} 
+                    onChange={(e) => setNewTaskDuration(e.target.value)}
+                    className="border-[3px] border-black rounded-none h-12 text-lg font-bold focus-visible:ring-0"
+                  />
+                </div>
+              </div>
+
+              <p className="text-[9px] font-pixel text-muted-foreground uppercase leading-tight">
+                * MINS = 0 FOR INSTANT BATTLE
+              </p>
+
+              <Button 
+                className="w-full bg-black text-white h-14 rounded-none font-pixel uppercase mt-2 hover:bg-black/90 active:scale-95 transition-transform"
+                onClick={addTask}
+              >
+                <Plus className="w-4 h-4 mr-2" /> ADD TO LOG
+              </Button>
+            </div>
 
             <div className="bg-white border-[3px] border-black p-4 pixel-shadow space-y-3">
               <div className="flex items-center justify-between font-pixel text-[10px]">
