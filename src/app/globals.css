@@ -1,51 +1,29 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 12 15% 96%;
-    --foreground: 12 10% 3.9%;
+    --background: 0 0% 98%;
+    --foreground: 0 0% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 12 10% 3.9%;
+    --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 12 10% 3.9%;
-    --primary: 15 80% 50%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 12 10% 92%;
-    --secondary-foreground: 15 80% 50%;
-    --muted: 12 10% 90%;
-    --muted-foreground: 12 10% 45.1%;
-    --accent: 345 68% 65%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 215 100% 50%; /* Classic Blue */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 90%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 84% 60%; /* Classic Red */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 12 10% 89.8%;
-    --input: 12 10% 89.8%;
-    --ring: 15 80% 50%;
-    --radius: 0.5rem;
-  }
-  .dark {
-    --background: 12 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 12 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 12 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 15 80% 50%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 12 10% 14.9%;
-    --secondary-foreground: 15 80% 50%;
-    --muted: 12 10% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 345 68% 65%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 12 10% 14.9%;
-    --input: 12 10% 14.9%;
-    --ring: 15 80% 50%;
+    --border: 0 0% 0%; /* Black Borders for Retro feel */
+    --input: 0 0% 89.8%;
+    --ring: 215 100% 50%;
+    --radius: 0rem; /* Hard edges for pixel look */
   }
 }
 
@@ -57,15 +35,33 @@
     @apply bg-background text-foreground;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-headline;
+    @apply font-pixel;
   }
 }
 
-.pixel-shadow {
-  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.1);
+@layer utilities {
+  .font-pixel {
+    font-family: 'Press Start 2P', cursive;
+  }
+  .pixel-shadow {
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  }
+  .pixel-border {
+    border: 4px solid #000;
+  }
 }
 
-.pixel-border {
-  border: 4px solid currentColor;
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.pixelated {
   image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
 }

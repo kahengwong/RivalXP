@@ -1,7 +1,5 @@
-
 "use client";
 
-import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
 interface XPProgressProps {
@@ -17,15 +15,20 @@ export function XPProgress({ label, currentXP, nextLevelXP, colorClass, level }:
 
   return (
     <div className="w-full space-y-2">
-      <div className="flex justify-between items-end">
-        <span className="font-headline text-lg font-bold uppercase tracking-tight">{label}</span>
-        <span className="text-sm font-medium">LVL {level} — {currentXP}/{nextLevelXP} XP</span>
+      <div className="flex justify-between items-end px-1">
+        <span className="font-pixel text-[10px] uppercase tracking-tighter">{label}</span>
+        <span className="font-pixel text-[8px]">L:{level}</span>
       </div>
-      <div className="relative h-6 w-full border-4 border-foreground overflow-hidden bg-background p-1">
+      <div className="relative h-5 w-full border-4 border-black bg-white p-0.5 overflow-hidden">
         <div 
-          className={cn("h-full transition-all duration-500 ease-out", colorClass || "bg-primary")}
+          className={cn("h-full transition-all duration-700 ease-out", colorClass || "bg-primary")}
           style={{ width: `${percentage}%` }}
         />
+        <div className="absolute inset-0 flex items-center justify-end px-2 pointer-events-none">
+           <span className="font-pixel text-[6px] mix-blend-difference text-white">
+            {currentXP}/{nextLevelXP}
+           </span>
+        </div>
       </div>
     </div>
   );

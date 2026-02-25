@@ -1,16 +1,15 @@
-
 {
   "placeholderImages": [
     {
-      "id": "rival-sprite-1",
-      "description": "A classic pixel art rival sprite with a confident stance",
-      "imageUrl": "https://picsum.photos/seed/rival1/128/128",
-      "imageHint": "pixel character"
+      "id": "rival-sprite",
+      "description": "Pixel art rival monster",
+      "imageUrl": "https://picsum.photos/seed/poke-rival/128/128",
+      "imageHint": "pixel monster"
     },
     {
-      "id": "user-sprite-1",
-      "description": "A classic pixel art hero sprite",
-      "imageUrl": "https://picsum.photos/seed/hero1/128/128",
+      "id": "user-sprite",
+      "description": "Pixel art hero character",
+      "imageUrl": "https://picsum.photos/seed/poke-hero/128/128",
       "imageHint": "pixel hero"
     }
   ]
