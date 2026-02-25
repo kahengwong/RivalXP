@@ -3,13 +3,13 @@
     {
       "id": "user-blastoise",
       "description": "Blastoise - blue water turtle Pokemon",
-      "imageUrl": "/Gemini_Generated_Image_kh6rfzkh6rfzkh6r.png",
+      "imageUrl": "/水箭龟.png",
       "imageHint": "blastoise"
     },
     {
       "id": "rival-pikachu",
       "description": "Pikachu - yellow electric Pokemon",
-      "imageUrl": "/Gemini_Generated_Image_kh6rfzkh6rfzkh6r.png",
+      "imageUrl": "/皮卡丘.png",
       "imageHint": "pikachu"
     }
   ]

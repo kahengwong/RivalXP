@@ -11,9 +11,8 @@ interface SpriteProps {
 }
 
 export function Sprite({ spriteId, size = 180, animate = true, className }: SpriteProps) {
-  // 使用合并的图片，通过 object-position 显示不同部分
-  // 皮卡丘在左边(0%), 水箭龟在右边(100%)
-  const objectPosition = spriteId === 'rival-pikachu' ? 'left' : 'right';
+  // 水箭龟用 user-blastoise, 皮卡丘用 rival-pikachu
+  const imageSrc = spriteId === 'user-blastoise' ? '/水箭龟.png' : '/皮卡丘.png';
 
   return (
     <div className={cn(
@@ -25,19 +24,14 @@ export function Sprite({ spriteId, size = 180, animate = true, className }: Spri
       <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[90%] h-6 bg-black/10 rounded-full blur-[4px]" />
       
       <div className="relative p-2">
-        <div 
-          className="relative overflow-hidden"
-          style={{ width: size, height: size }}
-        >
-          <Image 
-            src="/Gemini_Generated_Image_kh6rfzkh6rfzkh6r.png"
-            alt={spriteId}
-            fill
-            className="object-contain"
-            style={{ objectPosition: objectPosition === 'left' ? '0%' : '100%' }}
-            priority
-          />
-        </div>
+        <Image 
+          src={imageSrc}
+          alt={spriteId}
+          width={size}
+          height={size}
+          className="object-contain"
+          priority
+        />
       </div>
     </div>
   );
