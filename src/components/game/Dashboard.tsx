@@ -65,7 +65,7 @@ export function Dashboard({ initialRival }: { initialRival: Rival }) {
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskDuration, setNewTaskDuration] = useState("0");
   const [newTaskXP, setNewTaskXP] = useState("100");
-  const [taunt, setTaunt] = useState<string | null>(`野生的皮卡丘出现了！`);
+  const [taunt, setTaunt] = useState<string | null>("野生的皮卡丘出现了！");
 
   useEffect(() => {
     localStorage.setItem('rival_xp_state', JSON.stringify(gameState));
